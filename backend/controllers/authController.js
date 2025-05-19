@@ -86,3 +86,15 @@ export const getUserInfo = async (req, res) => {
         res.status(500).json({message: "Error fetching user info", error: error.message})
     }
 }
+
+export const deleteUser = async (req, res) => {
+    try {
+        const user = await User.deleteOne({_id: req.user._id})
+        if(!user){
+            return res.status(404).json({message: "User not found"})
+        }
+        return res.status(200).json({message: "Success removing user"})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to remove user", error: error.message})
+    }
+}

@@ -25,6 +25,15 @@ const UserSchema = new mongoose.Schema({
         }
     }
     ],
+    needed_skills: [{
+        category :{
+            type: String,
+        },
+        skill_name: {
+            type: String,
+        }
+    }]
+    ,
     friendlist: {
         type: String,
     },

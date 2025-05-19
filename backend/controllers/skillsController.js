@@ -32,7 +32,7 @@ export const removeSkill = async (req, res) => {
 
         return res.status(200).json({message: "Success removing skill", safeUser})
     } catch (error) {
-        return res.status(500).json({message: "Failed to remove skill"})
+        return res.status(500).json({message: "Failed to remove skill", error: error.message})
     }
 }
 
@@ -47,8 +47,35 @@ export const editSkill = async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(req.user._id, {$set: {skills: {_id: objectId, category: updatedSkill.category, skill_name:updatedSkill.skill_name}}}, {new:true})
 
-        return res.status(200).json({message: "Success updating skills"})
+        return res.status(200).json({message: "Success updating skills", error: error.message})
     } catch (error) {
         
+    }
+}
+
+export const getSkillInfo = async (req, res) => {
+    try {
+        const user = await User.findOne({_id: req.user._id}).select("-password")
+        if(!user){
+            return res.status(404).json({message: "User not found"})
+        }
+        const {skills: userSkill, ...remainingData} = user.toObject()
+        return res.status(200).json({message: "Success to get user skill", userSkill})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to get skill information", error: error.message})
+    }
+}
+
+export const wantedSkill = async (req, res) => {
+    try {
+        const {category, skill_name} = req.body
+        const user = await User.findByIdAndUpdate(req.user._id, {$push: {needed_skills :{category: category, skill_name: skill_name}}}, {new: true})
+        if(!user){
+            return res.status(404).json({message: "Cannot find user, please login first"})
+        }
+        const {password: pwd, ...safeUser} = user.toObject()
+        return res.status(200).json({message: "Success adding needed skills"})
+    } catch (error) {
+        return res.status(500).json({message: "Failed to add needed skill", error: error.message})
     }
 }
